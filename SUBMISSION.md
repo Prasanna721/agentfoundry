@@ -61,37 +61,51 @@ That layering — x402 for reads, custom escrow for outcomes — is the architec
 
 ## Detailed feedback (for the $500 USDC bonus pool)
 
-### What worked exceptionally well
+Notes from actually shipping this in a day. Not bullet-listed for-the-judges polish — just what I hit.
 
-1. **Arc's USDC-as-gas is genuinely magic for sub-cent products.** We never thought about gas tokens once. Bounty pricing, paywall pricing, and gas are all denominated in the same unit, so the margin math is one mental model. This is the real win of Arc; everything downstream is downstream of this.
+### Things that worked
 
-2. **Circle Developer-Controlled Wallets + Smart Contract Platform got us to "agents transacting on chain" in 30 minutes.** Wallet creation is a single API call. `createContractExecutionTransaction` with a function signature + ABI parameters is exactly the abstraction we wanted — no private key juggling, no node operator concerns.
+USDC-as-gas is the actual product. I priced bounties, x402 paywalls, and gas in the same unit and never had to think about gas tokens once. On any other chain I'd have a "do we have ETH?" Slack thread before every demo.
 
-3. **ERC-8004 deployed at well-known addresses on Arc Testnet was a huge accelerator.** We minted identity NFTs, set up reputation scaffolding, and didn't have to deploy anything ourselves. The fact that Arc has decided this is a first-class concept and shipped reference deployments is a meaningful product decision.
+Circle DCW is the right abstraction for a hackathon. `createContractExecutionTransaction({ walletId, contractAddress, abiFunctionSignature, abiParameters })` — no private keys, no nonce management, no RPC hand-rolling. Built end-to-end agent-to-agent payments without ever opening MetaMask.
 
-4. **Codex CLI and Claude Code CLI as off-the-shelf "agents" is the killer demo.** The judges watch real, production AI tools — not a test stub — read SKILL.md, solve a forge, and get paid in real USDC. That this works at all is a load-bearing piece of the hackathon thesis.
+ERC-8004 already being deployed at well-known addresses on Arc Testnet saved me probably 4 hours. Minting identity NFTs was a one-liner. I didn't have to think about what "agent identity" means architecturally — Arc decided.
 
-### What was rough
+Codex CLI and Claude Code CLI as the agents themselves is the demo. I'm not running a custom agent framework. I'm running off-the-shelf AI tooling, pointed at a SKILL.md, and watching it transact on chain. That's the pitch in one sentence.
 
-1. **Programmatic Circle faucet requires a mainnet API key.** `POST /v1/faucet/drips` returns `403 Forbidden` for sandbox/test keys, with no way to enable it for testnet-only usage. We had to fall back to manual UI drips at `faucet.circle.com`. For an *agentic* hackathon, this is the wrong default — we want every step to be automatable, including funding. The console-side faucet has a 5-requests-per-team-per-24h cap that's easy to hit accidentally during dev. The right default would be: testnet API keys can call programmatic faucet at the same rate as the UI, on the same per-team budget.
+Bun + Hono is silly fast. The whole API server is ~250 lines and serves both the dashboard and the JSON. No build step. `bun run apps/api/index.ts` and it's up.
 
-2. **`@circle-fin/smart-contract-platform` v10.3 SDK throws `TypeError: undefined is not an object (evaluating 'a.config')` inside the bundled `forge` crypto library** when calling `deployContract`. We dug into the bundle, couldn't isolate it cleanly under time pressure, and fell back to `forge create` with a fresh EOA funded from a Circle wallet (`scripts/fund-deployer.ts`). This is a regression — the same code path works on `@circle-fin/developer-controlled-wallets` v7.3 in the same project. Worth a triage.
+Gemini's `responseSchema` made the judge deterministic. Asking an LLM to "pick a winner and explain why" usually returns markdown soup. Schema-constrained JSON returned clean `{scores, winner, reason}` every time. This is what made wiring it to `pickWinner` on chain trivial.
 
-3. **Circle Nanopayments facilitator URL** isn't documented as a public, sandbox-callable endpoint in Circle's hackathon materials. We built our x402 middleware in two modes (challenge-only vs. facilitator-verified), but couldn't actually exercise the Nanopayments off-chain ledger from a sandbox key. A "test facilitator URL that accepts test keys" would close this loop.
+### Things that were genuinely annoying
 
-4. **Arc Testnet RPC has occasional intermittent 5xx during high-frequency parallel reads.** We saw it once during the 10-forge demo and had to retry. Easy workaround (caching `nextId` and rate-limiting parallel reads) but worth flagging.
+The programmatic faucet API requires a mainnet key. `POST /v1/faucet/drips` returns 403 for sandbox/test keys. We're literally trying to drip *testnet* USDC and Circle gates it behind a production credential. For an agentic hackathon — where the whole point is "the agent does it" — this is the wrong default. I had to ping the user to manually paste 4 addresses into faucet.circle.com.
 
-5. **Arc Testnet explorer (`testnet.arcscan.app`) doesn't surface contract verification UI.** We deployed via `forge create` and would have liked to verify source for the demo. The explorer accepts an `etherscan` API but the verification flow isn't documented for Arc Testnet.
+The console faucet has a 5-per-team-per-24h cap and there's no way to see how many you've used. Hit it within an hour the first day. Recovery is "wait" or "make a new team."
 
-6. **The lablab.ai event page returns 403 to bots** for the hackathon registration / project pages. We had to triangulate the hackathon rules from search snippets and community blog posts. For a hackathon explicitly soliciting AI agents, this is ironic — agents can't reliably read the rules. Recommendation: mirror the page behind a public `lablab.ai/raw/<event>` JSON.
+`@circle-fin/smart-contract-platform` v10.3 throws `TypeError: undefined is not an object (evaluating 'a.config')` deep in its bundled `forge` crypto lib when you call `deployContract`. Same env, same auth, same wallet that DCW happily signs from. Couldn't isolate it under time pressure. Fell back to generating a fresh EOA, funding it via DCW's `transfer`, and `forge create`. Works fine but adds a moving piece. Triage candidate.
 
-### What we would build next if the deadline let us
+The Nanopayments facilitator URL is gestured at in blog posts but not documented as a callable sandbox endpoint. So my x402 middleware enforces protocol shape (real 402 + correct `accepts` JSON, agents build EIP-3009-shaped X-PAYMENT) but doesn't actually verify against a facilitator. Demo-faithful, not production-faithful. A sandbox-callable test facilitator would close this loop in 10 minutes.
 
-- **Reputation-gated bidding via ERC-8004**, with `IACPHook`-style policy enforcement on the marketplace contract.
-- **Per-tool-call x402 paywalls between smiths**, where one smith can pay another for a sub-skill (e.g., "summarize this URL" for $0.001). This is where Nanopayments' batched gasless model truly shines.
-- **A working Circle Nanopayments facilitator wired in,** so the X-PAYMENT verification roundtrip is end-to-end real, not just protocol-shaped.
-- **Cross-chain: wrap CCTP into a "post a forge from any chain" flow.**
-- **An anti-Sybil staking layer** for high-bounty forges, mediated by the same hooks.
+Arc Testnet explorer doesn't expose a contract-verify UI. I'd love to upload my source for the demo but `testnet.arcscan.app` accepts an etherscan API key and the flow isn't documented. So judges see bytecode, not source.
+
+`forge create` silently outputs the artifact JSON without `--broadcast` and the warning at the bottom is one line in 50 of output. Lost 10 minutes wondering why the contract address never showed up. This is on me but the UX is hostile.
+
+The lablab.ai event page 403s every web crawler. I needed an LLM to read the rules at one point and it just couldn't — had to triangulate from blog mirrors. Slightly comedic for an *agent* hackathon. A `lablab.ai/raw/<event>.json` would fix this.
+
+Arc Testnet RPC 5xx'd a couple times during the 10-forge parallel demo run. Retry handled it but worth a public status page.
+
+### What I'd build next
+
+The judge is currently a creator-side action. Want to make it a hook so it auto-fires N seconds after submission count crosses a threshold — closer to a real auction.
+
+Pay-per-skill between smiths via x402. One smith specializes in summarization, charges $0.001/call, the other smiths route through it. That's where Nanopayments batching actually shines — thousands of nano-debits, one settlement.
+
+Real Nanopayments wiring (when the facilitator's reachable) — would make the read paywall numbers real money instead of protocol theatre.
+
+Anti-Sybil for big bounties. Right now anyone can register and submit. For a $100 bounty I want stake-to-bid via an ERC-8183-style hook.
+
+CCTP wrapping so a creator on Base can post a forge that pays out on Arc. Cross-chain bounties as a single user gesture.
 
 ## Proof artifacts
 
