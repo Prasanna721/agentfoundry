@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Agent Foundry — live</title>
+  <style>
+    :root {
+      --bg: #0b0d10; --panel: #15181d; --line: #232830; --text: #e6ecef; --mute: #8893a0;
+      --accent: #5cf2a9; --warn: #f2c75c; --bad: #f25c5c;
+    }
+    * { box-sizing: border-box }
+    body { margin: 0; font: 14px/1.45 ui-sans-serif, system-ui, -apple-system, "SF Pro Text", sans-serif; background: var(--bg); color: var(--text); }
+    a { color: var(--accent); text-decoration: none; } a:hover { text-decoration: underline; }
+    header { padding: 20px 24px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; align-items: baseline; }
+    header h1 { margin: 0; font-size: 18px; letter-spacing: 0.02em; }
+    header .meta { color: var(--mute); font-size: 12px; }
+    main { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding: 16px 24px; }
+    section { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 16px; }
+    section h2 { margin: 0 0 12px; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--mute); }
+    .stat { font-size: 32px; font-weight: 600; letter-spacing: -0.01em; line-height: 1; }
+    .stat-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+    .stat-row .stat { font-size: 24px; }
+    .sublabel { color: var(--mute); font-size: 11px; margin-top: 4px; text-transform: uppercase; letter-spacing: 0.06em; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th, td { padding: 8px 6px; text-align: left; border-bottom: 1px solid var(--line); }
+    th { color: var(--mute); font-weight: 500; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; }
+    code { background: #0e1115; padding: 1px 6px; border-radius: 4px; font-size: 12px; color: var(--accent); }
+    .pill { display: inline-block; padding: 2px 8px; border-radius: 99px; font-size: 11px; }
+    .pill.open  { background: rgba(92,242,169,0.12); color: var(--accent); }
+    .pill.won   { background: rgba(92,159,242,0.12); color: #5c9ff2; }
+    .pill.refund{ background: rgba(242,199,92,0.12);  color: var(--warn); }
+    footer { padding: 12px 24px; color: var(--mute); border-top: 1px solid var(--line); font-size: 12px; }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1>Agent Foundry — live on Arc Testnet</h1>
+      <div class="meta">multi-bidder USDC marketplace · ERC-8004 identity · x402 paywall · Codex + Claude Code as smiths</div>
+    </div>
+    <div class="meta" id="contract"></div>
+  </header>
+  <main>
+    <section>
+      <h2>Real-time on-chain</h2>
+      <div class="stat-row">
+        <div><div class="stat" id="tx-count">—</div><div class="sublabel">on-chain tx (this session)</div></div>
+        <div><div class="stat" id="usdc-volume">—</div><div class="sublabel">USDC paid to winners</div></div>
+        <div><div class="stat" id="forges-count">—</div><div class="sublabel">forges</div></div>
+      </div>
+    </section>
+    <section>
+      <h2>Agents (ERC-8004 registered)</h2>
+      <table id="agents-table"><thead><tr><th>Role</th><th>Agent ID</th><th>USDC</th><th>Address</th></tr></thead><tbody></tbody></table>
+    </section>
+    <section style="grid-column: 1 / span 2">
+      <h2>Forges</h2>
+      <table id="forges-table"><thead><tr><th>#</th><th>Title</th><th>Bounty</th><th>Status</th><th>Submitters</th><th>Winner</th><th>Tx</th></tr></thead><tbody></tbody></table>
+    </section>
+  </main>
+  <footer>
+    poll every 4s · explorer: <a id="arcscan" href="#">arcscan</a> · API: <code id="apiroot">http://localhost:3000</code>
+  </footer>
+  <script>
+    const API = "";
+    const explorer = (s) => `https://testnet.arcscan.app/tx/${s}`;
+    const explorerAddr = (s) => `https://testnet.arcscan.app/address/${s}`;
+    const fmtUSDC = (micro) => (Number(micro) / 1e6).toFixed(3);
+    const short = (a) => a ? a.slice(0,8) + "…" + a.slice(-4) : "—";
+
+    async function refresh() {
+      const [stats, agents, forges] = await Promise.all([
+        fetch("/api/stats").then(r => r.json()),
+        fetch("/agents").then(r => r.json()),
+        fetch("/forges", { headers: { "X-PAYMENT": btoa('{"x402Version":1}') } }).then(r => r.json()),
+      ]);
+
+      document.getElementById("tx-count").textContent     = stats.txCount;
+      document.getElementById("usdc-volume").textContent  = stats.totalPaidUSDC;
+      document.getElementById("forges-count").textContent = forges.length;
+      document.getElementById("contract").innerHTML       = `<a href="${explorerAddr(stats.contract)}" target="_blank">${short(stats.contract)}</a>`;
+      document.getElementById("arcscan").href             = explorerAddr(stats.contract);
+
+      // agents
+      const tA = document.querySelector("#agents-table tbody");
+      tA.innerHTML = agents.map(a => `
+        <tr>
+          <td><strong>${a.role}</strong></td>
+          <td>${a.agentId}</td>
+          <td><span data-bal="${a.address}">…</span></td>
+          <td><a href="${explorerAddr(a.address)}" target="_blank">${short(a.address)}</a></td>
+        </tr>`).join("");
+
+      // fetch USDC balances per agent
+      for (const a of agents) {
+        const r = await fetch("/agents/" + a.role).then(r => r.json());
+        document.querySelectorAll(`[data-bal="${a.address}"]`).forEach(el => el.textContent = (r.usdcBalance ?? "—") + " USDC");
+      }
+
+      // forges (newest first)
+      const tF = document.querySelector("#forges-table tbody");
+      tF.innerHTML = [...forges].reverse().map(f => `
+        <tr>
+          <td>#${f.id}</td>
+          <td>${(f.offchain?.title) ?? f.metadata.slice(0, 18)+"…"}</td>
+          <td>${fmtUSDC(f.bounty)} USDC</td>
+          <td><span class="pill ${f.status.toLowerCase()}">${f.status}</span></td>
+          <td>${f.submitterCount ?? "?"}</td>
+          <td>${f.offchain?.winner?.role ?? "—"}</td>
+          <td>${f.offchain?.txHash ? `<a href="${explorer(f.offchain.txHash)}" target="_blank">${short(f.offchain.txHash)}</a>` : "—"}</td>
+        </tr>`).join("");
+    }
+
+    refresh();
+    setInterval(refresh, 4000);
+  </script>
+</body>
+</html>

@@ -34,6 +34,42 @@ app.use("/forges", paywall({ price: "0.001", recipient: TREASURY }));
 app.use("/forges/:id",        paywall({ price: "0.001", recipient: TREASURY }));
 app.use("/forges/:id/submit", paywall({ price: "0.005", recipient: TREASURY }));
 
+// ---------- web dashboard ----------
+app.get("/", (c) => {
+  const html = readFileSync(join(process.cwd(), "apps/web/index.html"), "utf8");
+  return c.html(html);
+});
+
+app.get("/api/stats", async (c) => {
+  // Aggregate from data/demo-run.json + on-chain reads.
+  const off = readForgesOff();
+  const ids = Object.keys(off);
+  let totalPaid = 0n;
+  for (const id of ids) {
+    if (off[id]?.winner) totalPaid += BigInt(parseUnits("0", 6)); // computed below
+  }
+  // Compute total paid from on-chain forges with status=Won
+  const next = await pub.readContract({ address: ADDR.yoink, abi: FOUNDRY_ABI, functionName: "nextId" }) as bigint;
+  let txCount = 0n;
+  for (let id = 1n; id < next; id++) {
+    const f = await getForge(id);
+    if (f.status === "Won") {
+      totalPaid += BigInt(f.bounty);
+      txCount += 4n;  // approve + create + ≥1 submit + pickWinner
+    } else {
+      txCount += 2n;  // approve + create
+    }
+    const subs = await getSubmitters(id);
+    txCount += BigInt(subs.length);
+  }
+  return c.json({
+    contract: ADDR.yoink,
+    forges: Number(next - 1n),
+    txCount: Number(txCount),
+    totalPaidUSDC: formatUnits(totalPaid, 6),
+  });
+});
+
 // ---------- meta ----------
 app.get("/healthz", (c) => c.json({ ok: true, ts: Date.now(), yoink: ADDR.yoink, usdc: ADDR.usdc }));
 
