@@ -1,4 +1,4 @@
-export type TaskStatus = "open" | "closed";
+export type TaskStatus = "open" | "closed" | "expired";
 export type PaymentStatus = "pending" | "simulated" | "released" | "failed";
 
 export interface TaskAttachment {
@@ -37,6 +37,8 @@ export interface PaymentRecord {
   mode: "circle" | "simulated";
   recipient?: string;
   transactionId?: string;
+  transactionHash?: string;
+  transactionState?: string;
   error?: string;
   createdAt: string;
 }
@@ -55,6 +57,7 @@ export interface TaskRecord {
   metadataUrl?: string;
   createdAt: string;
   status: TaskStatus;
+  resolution?: "judged" | "expired";
   submissions: SubmissionRecord[];
   evaluation?: EvaluationRecord;
   payment?: PaymentRecord;

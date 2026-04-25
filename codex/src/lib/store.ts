@@ -138,6 +138,10 @@ export async function addSubmission(taskId: string, input: SubmissionInput) {
       throw new Error("Task is already closed.");
     }
 
+    if (new Date(task.deadlineAt).getTime() <= Date.now()) {
+      throw new Error("Task deadline has already passed.");
+    }
+
     const submission: SubmissionRecord = {
       id: `sub_${nanoid(10)}`,
       taskId,
@@ -167,6 +171,7 @@ export async function closeTask(
     }
 
     task.status = "closed";
+    task.resolution = "judged";
     task.evaluation = evaluation;
     task.payment = payment;
 
@@ -177,6 +182,23 @@ export async function closeTask(
         score: match?.score,
       };
     });
+
+    return task;
+  });
+}
+
+export async function expireTask(taskId: string) {
+  return mutateState(async (state) => {
+    const task = state.tasks.find((entry) => entry.id === taskId);
+
+    if (!task) {
+      throw new Error("Task not found.");
+    }
+
+    task.status = "expired";
+    task.resolution = "expired";
+    task.payment = undefined;
+    task.evaluation = undefined;
 
     return task;
   });

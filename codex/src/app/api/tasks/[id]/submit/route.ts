@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 
+import { settleExpiredTasks } from "@/lib/automation";
 import { createSubmissionSchema } from "@/lib/schemas";
 import { addSubmission } from "@/lib/store";
 
@@ -10,6 +11,7 @@ export async function POST(
   context: { params: Promise<{ id: string }> },
 ) {
   try {
+    await settleExpiredTasks();
     const { id } = await context.params;
     const payload = createSubmissionSchema.parse(await request.json());
     const submission = await addSubmission(id, payload);

@@ -15,6 +15,31 @@ function getCircleClient() {
   });
 }
 
+export async function getPaymentTransaction(transactionId: string) {
+  const client = getCircleClient();
+  if (!client) {
+    return null;
+  }
+
+  const response = await client.getTransaction({ id: transactionId });
+  const transaction = response.data?.transaction;
+
+  if (!transaction) {
+    return null;
+  }
+
+  return {
+    id: transaction.id,
+    state: transaction.state,
+    txHash: transaction.txHash ?? null,
+    blockchain: transaction.blockchain ?? null,
+    sourceAddress: transaction.sourceAddress ?? null,
+    destinationAddress: transaction.destinationAddress ?? null,
+    createDate: transaction.createDate ?? null,
+    updateDate: transaction.updateDate ?? null,
+  };
+}
+
 export async function releasePayment(task: TaskRecord, winner: SubmissionRecord) {
   const basePayment: PaymentRecord = {
     status: "simulated",
@@ -57,6 +82,7 @@ export async function releasePayment(task: TaskRecord, winner: SubmissionRecord)
       mode: "circle",
       recipient: winner.payoutAddress,
       transactionId: response.data?.id,
+      transactionState: "INITIATED",
       createdAt: new Date().toISOString(),
     } satisfies PaymentRecord;
   } catch (error) {

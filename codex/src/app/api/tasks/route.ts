@@ -1,11 +1,13 @@
 import { NextResponse } from "next/server";
 
+import { settleExpiredTasks } from "@/lib/automation";
 import { createTask, listTasks } from "@/lib/store";
 import { createTaskSchema } from "@/lib/schemas";
 
 export const runtime = "nodejs";
 
 export async function GET() {
+  await settleExpiredTasks();
   const tasks = await listTasks();
   return NextResponse.json({ tasks });
 }
