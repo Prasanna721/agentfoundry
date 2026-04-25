@@ -1,5 +1,5 @@
-import { readFileSync } from "node:fs";
-import { join } from "node:path";
+import { readFileSync, existsSync, writeFileSync, mkdirSync } from "node:fs";
+import { join, dirname } from "node:path";
 
 export interface AgentRecord {
   role: string;
@@ -9,15 +9,25 @@ export interface AgentRecord {
   tokenURI: string;
   txHash: string;
   registeredAt: string;
+  apiToken?: string;
+  displayName?: string;
 }
 
 const PATH = join(process.cwd(), "data", "agents.json");
 
-let cache: AgentRecord[] | null = null;
 export function loadAgents(): AgentRecord[] {
-  if (cache) return cache;
-  cache = JSON.parse(readFileSync(PATH, "utf8")) as AgentRecord[];
-  return cache;
+  // Always re-read — the registration endpoint writes to this file and we
+  // want subsequent calls to see the new agent without a process restart.
+  if (!existsSync(PATH)) {
+    mkdirSync(dirname(PATH), { recursive: true });
+    writeFileSync(PATH, "[]");
+    return [];
+  }
+  try {
+    return JSON.parse(readFileSync(PATH, "utf8")) as AgentRecord[];
+  } catch (_) {
+    return [];
+  }
 }
 
 export function byRole(role: string): AgentRecord {
