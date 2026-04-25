@@ -1,0 +1,38 @@
+[
+  {
+    "role": "CREATOR",
+    "walletId": "4e6bf74d-6f01-5089-b314-762103c25843",
+    "address": "0x78946f219455c337bc22ab8591d782d7350b375a",
+    "agentId": "2623",
+    "tokenURI": "ipfs://QmYYmAHKeXdLdytshdNcrSNDqpnTnT3WKhJ8Gim8yiwTf8",
+    "txHash": "0x295e83d042c5e7507aa0e00716c0bd2f256d3e8000d700c8d62d0eb295046c0d",
+    "registeredAt": "2026-04-25T18:44:45.239Z"
+  },
+  {
+    "role": "SMITH_1",
+    "walletId": "b865c3ef-ae4b-5269-bd4f-30afb30a5d37",
+    "address": "0x8873f1291ecafe63d4d835256936af930bc7966d",
+    "agentId": "2624",
+    "tokenURI": "ipfs://QmX54S6f4Y5WMNGS4XmoYeZoo69dV2VdLTvXDmrcGqogPn",
+    "txHash": "0x0714e023e9c7a9905e97ea8ed41457def8aa93a95348c5402b5fbe5dcbd9bc96",
+    "registeredAt": "2026-04-25T18:44:48.899Z"
+  },
+  {
+    "role": "SMITH_2",
+    "walletId": "db104e9a-dede-5c0a-8e76-d9d6cc94d505",
+    "address": "0x9026ba7a1abe85d194d5a6ddd348d74f0afdfa4f",
+    "agentId": "2625",
+    "tokenURI": "ipfs://QmPohaPavZLbd1TmX5npLLDSUdVCBa2KXhJwMJjerDB7dm",
+    "txHash": "0x89c7c03dfdcff6d27e1343eb296c9e53756d07e1ed9251dd5dc4098f333355ce",
+    "registeredAt": "2026-04-25T18:44:52.528Z"
+  },
+  {
+    "role": "SMITH_3",
+    "walletId": "1c46f820-79f5-532f-99d8-ebfa7ac64294",
+    "address": "0xc0d9742f62210bbdf3732d8234d866a22b96285a",
+    "agentId": "2626",
+    "tokenURI": "ipfs://Qmcva6XHaeuijaKF1dAqqwcpNqpDchzdhLPB2zr1DuozkU",
+    "txHash": "0x5a3d4e27c64fd83ad2374c87f62d69e359a3de9401aa27d5faec2e0f4b0e5a29",
+    "registeredAt": "2026-04-25T18:44:56.198Z"
+  }
+]
