@@ -1,0 +1,35 @@
+# secrets
+.env
+.env.*.local
+
+# node
+node_modules/
+.pnpm-store/
+.bun/
+dist/
+build/
+.next/
+out/
+
+# foundry
+cache/
+forge-cache/
+artifacts/
+broadcast/
+out/
+
+# data
+*.sqlite
+*.sqlite-journal
+*.db
+
+# os / editor
+.DS_Store
+.vscode/
+.idea/
+*.log
+
+# misc
+coverage/
+.tsbuildinfo
+.nyc_output/
