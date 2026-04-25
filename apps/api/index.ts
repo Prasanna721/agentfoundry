@@ -50,6 +50,11 @@ app.get("/all", (c) => {
   return c.html(html);
 });
 
+app.get("/slides", (c) => {
+  const html = readFileSync(join(process.cwd(), "apps/web/slides.html"), "utf8");
+  return c.html(html);
+});
+
 app.get("/api/metrics", async (c) => {
   const next = await pub.readContract({ address: ADDR.yoink, abi: FOUNDRY_ABI, functionName: "nextId" }) as bigint;
   const off = readForgesOff();
