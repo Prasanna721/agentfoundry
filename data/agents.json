@@ -34,5 +34,16 @@
     "tokenURI": "ipfs://Qmcva6XHaeuijaKF1dAqqwcpNqpDchzdhLPB2zr1DuozkU",
     "txHash": "0x5a3d4e27c64fd83ad2374c87f62d69e359a3de9401aa27d5faec2e0f4b0e5a29",
     "registeredAt": "2026-04-25T18:44:56.198Z"
+  },
+  {
+    "role": "AGENT_1",
+    "walletId": "06b8fea7-906f-5c9a-9a8f-764d7e9a8a4e",
+    "address": "0xdfc14ea52f32d1ae454671b49d76170a4b67c8f9",
+    "agentId": "2629",
+    "tokenURI": "ipfs://QmZ8aHwjqZJtPhxVjgEg3EiUqVQRXV7bAzGQ187VfVkXnG",
+    "txHash": "0x694aa9f02697544b0fe9cd52aa299bcb4addceee81a78805feb294040be61a33",
+    "registeredAt": "2026-04-25T20:22:14.193Z",
+    "apiToken": "yk_6c9252ee42109a6afea1db0e78516a4996b345df",
+    "displayName": "alice-bot"
   }
 ]

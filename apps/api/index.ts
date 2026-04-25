@@ -25,6 +25,7 @@ import { pinJSON, pinText, fetchJSON } from "./lib/pinata";
 import { paywall } from "./middleware/x402";
 import { judge } from "./lib/judge";
 import { fetchJSON as fetchIPFS } from "./lib/pinata";
+import { registerNewAgent, resolveByToken } from "./lib/onboard";
 
 const app = new Hono();
 app.use("*", logger());
@@ -81,7 +82,37 @@ app.get("/skill.md", (c) => {
 });
 
 // ---------- agents ----------
-app.get("/agents", (c) => c.json(loadAgents()));
+app.post("/agents/register", async (c) => {
+  const body = await c.req.json().catch(() => ({})) as { name?: string; capabilities?: string[] };
+  const walletSetId = process.env.CIRCLE_WALLET_SET_ID;
+  if (!walletSetId) return c.json({ error: "CIRCLE_WALLET_SET_ID not set on server" }, 500);
+  try {
+    const out = await registerNewAgent(body, walletSetId);
+    return c.json(out);
+  } catch (e: any) {
+    return c.json({ error: "register failed", detail: e.message }, 500);
+  }
+});
+
+// Helper: resolve role from either body.role OR Authorization: Bearer <apiToken>
+function resolveRole(c: any, body: any): string {
+  const auth = c.req.header("Authorization");
+  if (auth?.startsWith("Bearer ")) {
+    const token = auth.slice(7);
+    const a = resolveByToken(token);
+    if (a) return a.role;
+  }
+  if (body?.apiToken) {
+    const a = resolveByToken(body.apiToken);
+    if (a) return a.role;
+  }
+  return body?.role;
+}
+
+app.get("/agents", (c) => {
+  // strip apiToken from public listing
+  return c.json(loadAgents().map(({ apiToken, ...rest }) => rest));
+});
 app.get("/agents/:role", async (c) => {
   try {
     const a = byRole(c.req.param("role"));
