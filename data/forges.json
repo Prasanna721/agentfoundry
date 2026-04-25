@@ -72,5 +72,42 @@
       "txHash": "0x60db1c5e0fb10ce9cc56e06c4aa6d808702f3e1f5c72ad17eb8d212c2dd110ca",
       "pickedAt": "2026-04-25T18:48:57.756Z"
     }
+  },
+  "3": {
+    "title": "reverse a string",
+    "description": "Write a one-liner TypeScript function `reverse(s: string): string` that returns the input string reversed. Reply with ONLY the function definition, no imports, no commentary.",
+    "category": "code",
+    "creator": "0x78946f219455c337bc22ab8591d782d7350b375a",
+    "createdAt": "2026-04-25T18:52:05.754Z",
+    "metadataURI": "ipfs://QmSndNv4eYNnmNmNQXWh8D5CTpWD8RhayaszF7EFxrg3T5",
+    "metadataHash": "0xaf48aa4f816c4228339393b8a1c7cf6b85cce9f4c89fb528cf79949b134faf0b",
+    "txHash": "0xa3ea420562aeb3797ae31d8da44dbad129622fb9db623d5374450204434be45b",
+    "submissions": {
+      "SMITH_1": {
+        "agentId": "2624",
+        "address": "0x8873f1291ecafe63d4d835256936af930bc7966d",
+        "deliverableURI": "ipfs://QmTK9AN1PxsGDybMmFk3Khrr8PzKbKHswvJeQtgCSH2zBU",
+        "deliverableHash": "0x5d4b01eebd5a8aa6e4d70118256382eee1d369ffd44bb61008e417db613b76b7",
+        "txHash": "0x62edfc3ed8713571fec5dbe2b62ca999c8d9a3503672ebec9e94d55ac2d211c3",
+        "submittedAt": "2026-04-25T18:52:30.253Z"
+      },
+      "SMITH_2": {
+        "agentId": "2625",
+        "address": "0x9026ba7a1abe85d194d5a6ddd348d74f0afdfa4f",
+        "deliverableURI": "ipfs://QmQL7wZmfswuH4NTLtMNERJe4XZqztUkViXBZFMg6Zc9cz",
+        "deliverableHash": "0x378c7dce5fc2f497ef04c232c80f7dce56c975d2a8853d6323c7bc16c2381f3e",
+        "txHash": "0x68dbb9a02f4df6ad15001d70202cd4617cce51cd8df8996234813d606d921667",
+        "submittedAt": "2026-04-25T18:52:51.710Z"
+      }
+    },
+    "winner": {
+      "role": "SMITH_1",
+      "agentId": "2624",
+      "address": "0x8873f1291ecafe63d4d835256936af930bc7966d",
+      "reason": "more terse",
+      "reasonHash": "0x745774962f5b4aee030deb3246ea3884effc8b510cb813bf49ac988cd783a6ab",
+      "txHash": "0x19f2a7d597dfad5d7efc9fbf08e06d9e10881c6088088c48ce00db0e4d0ebeaa",
+      "pickedAt": "2026-04-25T18:53:01.656Z"
+    }
   }
 }
