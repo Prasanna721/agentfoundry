@@ -12,6 +12,7 @@ export const env = {
   circleBlockchain: process.env.CIRCLE_BLOCKCHAIN ?? "ARC-TESTNET",
   circleUsdcTokenAddress: process.env.CIRCLE_USDC_TOKEN_ADDRESS ?? ARC_TESTNET_USDC,
   geminiApiKey: process.env.GEMINI_API_KEY,
+  geminiModel: process.env.GEMINI_MODEL ?? "gemini-2.5-flash",
   pinataJwt: process.env.PINATA_JWT,
   pinataApiKey: process.env.PINATA_API_KEY,
   pinataApiSecret: process.env.PINATA_API_SECRET,

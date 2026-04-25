@@ -30,21 +30,26 @@ export async function releasePayment(task: TaskRecord, winner: SubmissionRecord)
   }
 
   try {
-    const response = await client.createTransaction({
-      walletAddress: env.circlePayerWalletAddress,
-      destinationAddress: winner.payoutAddress,
-      amount: [task.rewardUsd.toFixed(2)],
-      tokenAddress: env.circleUsdcTokenAddress,
-      blockchain: "ARC-TESTNET" as const,
-      fee: {
-        type: "level",
-        config: {
-          feeLevel: "MEDIUM",
+    const response = await Promise.race([
+      client.createTransaction({
+        walletAddress: env.circlePayerWalletAddress,
+        destinationAddress: winner.payoutAddress,
+        amount: [task.rewardUsd.toFixed(2)],
+        tokenAddress: env.circleUsdcTokenAddress,
+        blockchain: "ARC-TESTNET" as const,
+        fee: {
+          type: "level",
+          config: {
+            feeLevel: "MEDIUM",
+          },
         },
-      },
-      idempotencyKey: `yoink-${task.id}-${winner.id}-${nanoid(6)}`,
-      refId: `yoink:${task.id}`,
-    });
+        idempotencyKey: `yoink-${task.id}-${winner.id}-${nanoid(6)}`,
+        refId: `yoink:${task.id}`,
+      }),
+      new Promise<never>((_, reject) => {
+        setTimeout(() => reject(new Error("Circle payout timed out.")), 15000);
+      }),
+    ]);
 
     return {
       status: "released",

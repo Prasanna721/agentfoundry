@@ -20,6 +20,59 @@ function extractJsonBlock(raw: string) {
   return inline?.[0] ?? raw;
 }
 
+function extractGeminiText(response: {
+  candidates?: Array<{
+    content?: {
+      parts?: Array<{ text?: string }>;
+    };
+  }>;
+}) {
+  return response.candidates
+    ?.flatMap((candidate) => candidate.content?.parts ?? [])
+    .map((part) => part.text ?? "")
+    .join("\n")
+    .trim();
+}
+
+function normalizeRubric(
+  task: TaskRecord,
+  rubric: unknown,
+): Array<{ submissionId: string; score: number; reasoning: string }> {
+  if (Array.isArray(rubric)) {
+    return rubric
+      .map((item) => {
+        if (
+          item &&
+          typeof item === "object" &&
+          "submissionId" in item &&
+          "score" in item &&
+          "reasoning" in item
+        ) {
+          return {
+            submissionId: String(item.submissionId),
+            score: Number(item.score),
+            reasoning: String(item.reasoning),
+          };
+        }
+
+        return null;
+      })
+      .filter((item): item is { submissionId: string; score: number; reasoning: string } =>
+        Boolean(item),
+      );
+  }
+
+  if (typeof rubric === "string") {
+    return task.submissions.map((submission, index) => ({
+      submissionId: submission.id,
+      score: Math.max(50 - index * 5, 20),
+      reasoning: rubric,
+    }));
+  }
+
+  throw new Error("Gemini response did not include a usable rubric.");
+}
+
 async function evaluateWithGemini(task: TaskRecord): Promise<EvaluationRecord> {
   const ai = new GoogleGenAI({ apiKey: env.geminiApiKey });
   const prompt = `
@@ -52,21 +105,35 @@ ${task.submissions
 `;
 
   const response = await ai.models.generateContent({
-    model: "gemini-2.5-flash",
+    model: env.geminiModel,
     contents: prompt,
   });
 
-  const parsed = JSON.parse(extractJsonBlock(response.text ?? "{}")) as {
+  const rawText = extractGeminiText(response);
+  if (!rawText) {
+    throw new Error("Gemini returned no text response.");
+  }
+
+  const parsed = JSON.parse(extractJsonBlock(rawText)) as {
     winnerSubmissionId: string;
     summary: string;
-    rubric: Array<{ submissionId: string; score: number; reasoning: string }>;
+    rubric: unknown;
   };
+
+  const rubric = normalizeRubric(task, parsed.rubric);
+  const winnerSubmissionId =
+    rubric.find((item) => item.submissionId === parsed.winnerSubmissionId)?.submissionId ??
+    rubric.sort((a, b) => b.score - a.score)[0]?.submissionId;
+
+  if (!winnerSubmissionId) {
+    throw new Error("Gemini did not return a valid winning submission.");
+  }
 
   return {
     taskId: task.id,
-    winnerSubmissionId: parsed.winnerSubmissionId,
+    winnerSubmissionId,
     summary: parsed.summary,
-    rubric: parsed.rubric,
+    rubric,
     mode: "gemini",
     createdAt: new Date().toISOString(),
   };

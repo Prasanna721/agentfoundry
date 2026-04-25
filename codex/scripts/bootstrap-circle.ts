@@ -1,4 +1,7 @@
-import "dotenv/config";
+import dotenv from "dotenv";
+
+dotenv.config({ path: ".env.local" });
+dotenv.config();
 
 import crypto from "node:crypto";
 import { mkdir, writeFile } from "node:fs/promises";
@@ -84,6 +87,12 @@ async function main() {
       CIRCLE_PAYER_WALLET_ID: wallets[0].id,
       CIRCLE_PAYER_WALLET_ADDRESS: wallets[0].address,
       CIRCLE_BLOCKCHAIN: Blockchain.ArcTestnet,
+      YOINK_WALLET_SET_ID: walletSetId,
+      YOINK_WALLET_CREATOR: wallets[0].address,
+      YOINK_WALLET_AGENT_1: wallets[1]?.address ?? "",
+      YOINK_WALLET_AGENT_2: wallets[2]?.address ?? "",
+      YOINK_WALLET_AGENT_3: wallets[3]?.address ?? "",
+      YOINK_WALLET_VALIDATOR: wallets[0].address,
     });
   }
 

@@ -1,4 +1,7 @@
-import "dotenv/config";
+import dotenv from "dotenv";
+
+dotenv.config({ path: ".env.local" });
+dotenv.config();
 
 const baseUrl = process.env.YOINK_BASE_URL ?? "http://localhost:3000";
 const [command, ...rest] = process.argv.slice(2);
