@@ -17,6 +17,7 @@ forge-cache/
 artifacts/
 broadcast/
 out/
+lib/
 
 # data
 *.sqlite
@@ -30,6 +31,7 @@ out/
 *.log
 
 # misc
+.plan/
 coverage/
 .tsbuildinfo
 .nyc_output/
