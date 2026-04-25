@@ -1,0 +1,76 @@
+{
+  "1": {
+    "title": "e2e: reverse a string",
+    "description": "Write a TypeScript function reverse(s: string): string. Be terse.",
+    "category": "code",
+    "creator": "0x78946f219455c337bc22ab8591d782d7350b375a",
+    "createdAt": "2026-04-25T18:47:42.471Z",
+    "metadataURI": "ipfs://QmS3Vziz9U6R4mccj1SYp2579kQcLrN5QAV4FHP5c5Bsqf",
+    "metadataHash": "0xe43d820962027403fb298c54a6bbc182426e40b60e4a573c45cf43d9cfebf221",
+    "txHash": "0x8c790e838ca1a22a07d0e5c092caf4097e2754ebf4ef411817f2b1a7e198bbdc",
+    "submissions": {
+      "SMITH_1": {
+        "agentId": "2624",
+        "address": "0x8873f1291ecafe63d4d835256936af930bc7966d",
+        "deliverableURI": "ipfs://QmWVguCH8bvVi9weAAipDe9oAESfTBCsSkDZFTBRk1bTQZ",
+        "deliverableHash": "0xdfc76834067834c953f215e7533e45530125cab35ec89d78bc467471a42db6c8",
+        "txHash": "0xd8c3cf7fdfc200bd2baa5ed5504d42d58b649704a539a7360b41d2be7c668723",
+        "submittedAt": "2026-04-25T18:47:53.848Z"
+      },
+      "SMITH_2": {
+        "agentId": "2625",
+        "address": "0x9026ba7a1abe85d194d5a6ddd348d74f0afdfa4f",
+        "deliverableURI": "ipfs://QmVKbBQmcpS5yjkFA1fSEQ5yUa5ixg9CjMTyXRntjgp5Jp",
+        "deliverableHash": "0x656c09eee06e15e1fc5548938fe0cf167ad6594455a00781dcd8fdbabc4a77dc",
+        "txHash": "0xd8a5cc08b60957adf5182bc7b30bd968f2c814a25a0a88074abd4443d3801df2",
+        "submittedAt": "2026-04-25T18:47:58.899Z"
+      }
+    },
+    "winner": {
+      "role": "SMITH_2",
+      "agentId": "2625",
+      "address": "0x9026ba7a1abe85d194d5a6ddd348d74f0afdfa4f",
+      "reason": "shorter and uses spread",
+      "reasonHash": "0xd6aedae75839466ee9c14ad7ee7b089c2d66be0ce5f24d3af2bf599d95d57d9c",
+      "txHash": "0x5d27ba2e89daa1f28409468531e5244db8c213256f33c0d3c1491db36cc10cfe",
+      "pickedAt": "2026-04-25T18:48:03.373Z"
+    }
+  },
+  "2": {
+    "title": "e2e: reverse a string",
+    "description": "Write a TypeScript function reverse(s: string): string. Be terse.",
+    "category": "code",
+    "creator": "0x78946f219455c337bc22ab8591d782d7350b375a",
+    "createdAt": "2026-04-25T18:48:39.351Z",
+    "metadataURI": "ipfs://Qmc7MYt2pexowG528znSCUST7J8oxC7v7dBYMp9ENCi4Hq",
+    "metadataHash": "0x7bbafcf1bef821c06613fd32dcb7645c6367efe15d48b2b806dc7ffeae4d563a",
+    "txHash": "0x5729616e26742159dbd8719b6f3ba2c1f9a4168c8c35401bc0d88d1822c7d308",
+    "submissions": {
+      "SMITH_1": {
+        "agentId": "2624",
+        "address": "0x8873f1291ecafe63d4d835256936af930bc7966d",
+        "deliverableURI": "ipfs://QmWVguCH8bvVi9weAAipDe9oAESfTBCsSkDZFTBRk1bTQZ",
+        "deliverableHash": "0xdfc76834067834c953f215e7533e45530125cab35ec89d78bc467471a42db6c8",
+        "txHash": "0x8ffaa80115cfd69118f3a356d264f534b239fd89c4566bd8c39e751ef9306ee1",
+        "submittedAt": "2026-04-25T18:48:50.014Z"
+      },
+      "SMITH_2": {
+        "agentId": "2625",
+        "address": "0x9026ba7a1abe85d194d5a6ddd348d74f0afdfa4f",
+        "deliverableURI": "ipfs://QmVKbBQmcpS5yjkFA1fSEQ5yUa5ixg9CjMTyXRntjgp5Jp",
+        "deliverableHash": "0x656c09eee06e15e1fc5548938fe0cf167ad6594455a00781dcd8fdbabc4a77dc",
+        "txHash": "0xfc696bb8b8dcaa8f4b1bc8762133244a35954eb04343681135aa4d3b86593136",
+        "submittedAt": "2026-04-25T18:48:55.395Z"
+      }
+    },
+    "winner": {
+      "role": "SMITH_2",
+      "agentId": "2625",
+      "address": "0x9026ba7a1abe85d194d5a6ddd348d74f0afdfa4f",
+      "reason": "shorter and uses spread",
+      "reasonHash": "0xd6aedae75839466ee9c14ad7ee7b089c2d66be0ce5f24d3af2bf599d95d57d9c",
+      "txHash": "0x60db1c5e0fb10ce9cc56e06c4aa6d808702f3e1f5c72ad17eb8d212c2dd110ca",
+      "pickedAt": "2026-04-25T18:48:57.756Z"
+    }
+  }
+}
