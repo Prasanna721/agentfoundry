@@ -38,9 +38,86 @@ app.use("/forges/:id",        paywall({ price: "0.001", recipient: TREASURY }));
 app.use("/forges/:id/submit", paywall({ price: "0.005", recipient: TREASURY }));
 
 // ---------- web dashboard ----------
+const APP_STARTED_AT = new Date();
+
 app.get("/", (c) => {
   const html = readFileSync(join(process.cwd(), "apps/web/index.html"), "utf8");
   return c.html(html);
+});
+
+app.get("/all", (c) => {
+  const html = readFileSync(join(process.cwd(), "apps/web/all.html"), "utf8");
+  return c.html(html);
+});
+
+app.get("/api/metrics", async (c) => {
+  const next = await pub.readContract({ address: ADDR.yoink, abi: FOUNDRY_ABI, functionName: "nextId" }) as bigint;
+  const off = readForgesOff();
+  const agents = loadAgents();
+  let totalPaid = 0n;
+  let txCount = 0n;
+  let openForges = 0;
+  let wonForges = 0;
+  let refundedForges = 0;
+  let totalSubs = 0;
+  let totalBounty = 0n;
+  let totalCompletionSec = 0;
+  let completionCount = 0;
+  let largestBounty = 0n;
+  let largestForgeId = "—";
+  const byCategory: Record<string, number> = {};
+  for (let id = 1n; id < next; id++) {
+    const f = await getForge(id);
+    const meta = off[id.toString()];
+    totalBounty += BigInt(f.bounty);
+    if (BigInt(f.bounty) > largestBounty) { largestBounty = BigInt(f.bounty); largestForgeId = id.toString(); }
+    if (f.status === "Won")     { wonForges++;     totalPaid += BigInt(f.bounty); txCount += 4n; }
+    else if (f.status === "Refunded") { refundedForges++; txCount += 2n; }
+    else                              { openForges++;    txCount += 2n; }
+    const subs = await getSubmitters(id);
+    txCount += BigInt(subs.length);
+    totalSubs += subs.length;
+    if (meta?.category) byCategory[meta.category] = (byCategory[meta.category] ?? 0) + 1;
+    // completion time: createdAt -> winner.pickedAt
+    if (meta?.createdAt && meta?.winner?.pickedAt) {
+      const dt = (new Date(meta.winner.pickedAt).getTime() - new Date(meta.createdAt).getTime()) / 1000;
+      if (dt > 0 && dt < 86400) { totalCompletionSec += dt; completionCount++; }
+    }
+  }
+  const total = Number(next - 1n);
+  const lb = await (async () => {
+    const stats: Record<string, { role: string; wins: number; earned: number }> = {};
+    for (const a of agents) stats[a.role] = { role: a.role, wins: 0, earned: 0 };
+    for (let id = 1n; id < next; id++) {
+      const meta = off[id.toString()];
+      if (meta?.winner?.role && stats[meta.winner.role]) {
+        stats[meta.winner.role].wins += 1;
+        const f = await getForge(id);
+        stats[meta.winner.role].earned += Number(f.bounty) / 1e6;
+      }
+    }
+    return Object.values(stats).sort((a, b) => b.earned - a.earned)[0] ?? null;
+  })();
+  return c.json({
+    contract: ADDR.yoink,
+    forges: total,
+    txCount: Number(txCount),
+    usdcPaidOut: formatUnits(totalPaid, 6),
+    agents: agents.length,
+    uptimeSeconds: Math.floor((Date.now() - APP_STARTED_AT.getTime()) / 1000),
+    startedAt: APP_STARTED_AT.toISOString(),
+    averageBountyUSDC: total > 0 ? (Number(totalBounty) / 1e6 / total).toFixed(3) : "0",
+    averageSubmittersPerForge: total > 0 ? (totalSubs / total).toFixed(2) : "0",
+    averageCompletionSec: completionCount > 0 ? Math.round(totalCompletionSec / completionCount) : 0,
+    largestBountyUSDC: formatUnits(largestBounty, 6),
+    largestForgeId,
+    totalSubmissions: totalSubs,
+    openForges,
+    wonForges,
+    refundedForges,
+    forgesByCategory: byCategory,
+    topAgent: lb,
+  });
 });
 
 app.get("/api/stats", async (c) => {
