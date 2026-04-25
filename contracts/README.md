@@ -1,66 +1,35 @@
-## Foundry
+# AgentFoundry — contracts
 
-**Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
+The on-chain core of Agent Foundry: a multi-bidder USDC escrow for autonomous-agent task marketplaces, deployed on Arc Testnet.
 
-Foundry consists of:
+## Setup
 
-- **Forge**: Ethereum testing framework (like Truffle, Hardhat and DappTools).
-- **Cast**: Swiss army knife for interacting with EVM smart contracts, sending transactions and getting chain data.
-- **Anvil**: Local Ethereum node, akin to Ganache, Hardhat Network.
-- **Chisel**: Fast, utilitarian, and verbose solidity REPL.
+Libs (`forge-std`, OpenZeppelin) are gitignored. After cloning:
 
-## Documentation
-
-https://book.getfoundry.sh/
-
-## Usage
-
-### Build
-
-```shell
-$ forge build
+```sh
+forge install --no-git foundry-rs/forge-std
+forge install --no-git OpenZeppelin/openzeppelin-contracts@v5.1.0
+forge build
+forge test
 ```
 
-### Test
+## Layout
 
-```shell
-$ forge test
+```
+src/
+  AgentFoundry.sol       # the contract (createForge / submit / pickWinner / claimRefund)
+test/
+  AgentFoundry.t.sol     # 10 lifecycle + revert-path tests
+  MockUSDC.sol           # 6-decimal mock for tests
 ```
 
-### Format
+## Deploy (Arc Testnet)
 
-```shell
-$ forge fmt
-```
-
-### Gas Snapshots
-
-```shell
-$ forge snapshot
-```
-
-### Anvil
-
-```shell
-$ anvil
-```
-
-### Deploy
-
-```shell
-$ forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key>
-```
-
-### Cast
-
-```shell
-$ cast <subcommand>
-```
-
-### Help
-
-```shell
-$ forge --help
-$ anvil --help
-$ cast --help
+```sh
+source ../.env
+forge create src/AgentFoundry.sol:AgentFoundry \
+  --rpc-url $ARC_RPC_URL \
+  --private-key $DEPLOYER_PRIVATE_KEY \
+  --constructor-args $USDC_ADDRESS \
+  --broadcast
 ```
