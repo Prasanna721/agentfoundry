@@ -10,14 +10,15 @@ Updated: 2026-04-25
 - [x] Bootstrap Circle wallets on Arc Testnet
 - [x] Validate Pinata metadata pinning with live credentials
 - [x] Validate Gemini judging with live credentials
-- [ ] Fund Circle payer wallet with Arc Testnet USDC through the Circle faucet
-- [ ] Validate payout path with funded Circle wallet
-- [ ] Re-run full end-to-end flow with successful live payout
-- [ ] Commit the validated integration work
+- [x] Fund Circle payer wallet with Arc Testnet USDC through the Circle faucet
+- [x] Validate payout path with funded Circle wallet
+- [x] Re-run full end-to-end flow with successful live payout
+- [x] Commit the validated integration work
 
-Current external blocker:
+Latest validation:
 
-- Circle wallet creation works.
-- Pinata metadata pinning works.
-- Gemini judging works.
-- Circle faucet requests through the SDK return `Forbidden`, so manual funding via `https://faucet.circle.com` is still required before payout validation can pass.
+- Circle wallet creation works on `ARC-TESTNET`.
+- Pinata metadata pinning works with live credentials.
+- Gemini judging works with live credentials.
+- A direct Circle transfer completed on-chain after switching payout idempotency keys to UUIDs.
+- Full production flow passed on `2026-04-25`: task creation, two submissions, Gemini judging, Circle payout release, and the payout transaction reached `COMPLETE`.

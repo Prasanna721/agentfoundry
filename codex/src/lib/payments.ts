@@ -1,5 +1,5 @@
 import { initiateDeveloperControlledWalletsClient } from "@circle-fin/developer-controlled-wallets";
-import { nanoid } from "nanoid";
+import { randomUUID } from "node:crypto";
 
 import { env } from "@/lib/env";
 import type { PaymentRecord, SubmissionRecord, TaskRecord } from "@/lib/types";
@@ -43,7 +43,7 @@ export async function releasePayment(task: TaskRecord, winner: SubmissionRecord)
             feeLevel: "MEDIUM",
           },
         },
-        idempotencyKey: `yoink-${task.id}-${winner.id}-${nanoid(6)}`,
+        idempotencyKey: randomUUID(),
         refId: `yoink:${task.id}`,
       }),
       new Promise<never>((_, reject) => {
