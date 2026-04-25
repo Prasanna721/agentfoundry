@@ -23,28 +23,41 @@ import { spawn } from "node:child_process";
 
 const apiBase = process.env.API_BASE ?? "http://localhost:3000";
 const FORGES  = Number(process.env.FORGES ?? 8);
-const BOUNTY  = process.env.BOUNTY ?? "0.10";
+const BOUNTY  = process.env.BOUNTY ?? "1.00";  // $1 USDC by default — visible "real money" magnitude
 const EXPIRES = Number(process.env.EXPIRES ?? 600);
+const USE_JUDGE = process.env.USE_JUDGE !== "false";  // default: route winner-pick through Gemini
 
 interface Brief { title: string; description: string; category: string }
 
-const CODE_BRIEFS: Brief[] = [
-  { title: "reverse a string",        description: "Write a one-liner TypeScript function reverse(s: string): string. Reply with ONLY the function definition.", category: "code" },
-  { title: "is palindrome",           description: "Write a one-liner TypeScript function isPalindrome(s: string): boolean. Reply with ONLY the function definition.", category: "code" },
-  { title: "fibonacci nth",           description: "Write a TypeScript function fib(n: number): number returning the nth Fibonacci number. Use iteration, not recursion. Reply with ONLY the function definition.", category: "code" },
-  { title: "unique array",            description: "Write a TypeScript function unique<T>(xs: T[]): T[] preserving original order. Reply with ONLY the function definition.", category: "code" },
-  { title: "rgb to hex",              description: "Write a TypeScript function rgbToHex(r: number, g: number, b: number): string returning a 7-char string starting with #. Reply with ONLY the function definition.", category: "code" },
+// Real, judgeable briefs — designed to differentiate Codex vs Claude outputs.
+const BRIEFS: Brief[] = [
+  { title: "USDC-as-gas economics essay",
+    description: "Write a 250-word essay explaining why denominating gas in USDC (instead of a volatile native token) changes the economics of AI agent marketplaces. Include one concrete numeric example. Plain prose, no headings.",
+    category: "writing" },
+  { title: "Postgres schema for a payment log",
+    description: "Design a 3-table PostgreSQL schema for an agent payment log: agents, forges, payments. Include primary keys, foreign keys, and 2 indexes per table. Reply with ONLY the SQL DDL — no explanation.",
+    category: "data" },
+  { title: "TypeScript: viem listener for AgentFoundry",
+    description: "Write a complete TypeScript module (~50 lines) using viem that subscribes to AgentFoundry events (ForgeCreated, Submitted, WinnerPicked) on Arc Testnet RPC https://rpc.testnet.arc.network/ and persists each event to a SQLite table called `events`. Reply with ONLY runnable code.",
+    category: "code" },
+  { title: "LinkedIn announcement post",
+    description: "Compose a 200-word LinkedIn post announcing Agent Foundry — a USDC-settled, on-chain agent-to-agent task marketplace running on Circle's Arc L1. Professional tone. No emojis. End with a call to read the SKILL.md.",
+    category: "writing" },
+  { title: "ERC-8004 explainer for Solidity engineers",
+    description: "Write 3 paragraphs (≈350 words total) explaining ERC-8004 to engineers who already know ERC-721 but have not heard of agent identity standards. Include the contract addresses on Arc Testnet (IdentityRegistry 0x8004A818BFB912233c491871b3d84c89A494BD9e, ReputationRegistry 0x8004B663056A597Dffe9eCcC1965A193B7388713).",
+    category: "writing" },
+  { title: "x402 tweet thread",
+    description: "Write a 5-tweet thread explaining the x402 payment protocol. Each tweet ≤ 280 characters. Number them 1/5..5/5. No emojis. The thread should land that x402 is HTTP-native micropayments for AI agents.",
+    category: "writing" },
+  { title: "Why-Arc README section",
+    description: "Write a complete README section titled '## Why Arc' — about 150 words plus a markdown comparison table with rows: 'tx fee per call', 'gas asset', 'finality', 'breakeven for $0.10 bounty'. Compare Arc vs Ethereum mainnet vs Solana. Reply with ONLY the markdown.",
+    category: "writing" },
+  { title: "JSON Schema for forge submission",
+    description: "Generate a JSON Schema (draft-07) describing a forge submission object with these required fields: forgeId (string), role (enum CREATOR/SMITH_1/SMITH_2/SMITH_3/AGENT_*), deliverableURI (ipfs:// URI), deliverableHash (32-byte hex), submittedAt (ISO timestamp). Reply with ONLY the JSON.",
+    category: "data" },
 ];
 
-const RESEARCH_BRIEFS: Brief[] = [
-  { title: "summarize Arc",           description: "In 2-3 sentences, summarize what Circle's Arc L1 blockchain is. Reply with ONLY the summary.", category: "research" },
-  { title: "summarize x402",          description: "In 2-3 sentences, summarize what the x402 payment protocol is. Reply with ONLY the summary.", category: "research" },
-  { title: "summarize ERC-8004",      description: "In 2-3 sentences, summarize what ERC-8004 is. Reply with ONLY the summary.", category: "research" },
-  { title: "summarize ERC-8183",      description: "In 2-3 sentences, summarize what ERC-8183 is. Reply with ONLY the summary.", category: "research" },
-  { title: "summarize Nanopayments",  description: "In 2-3 sentences, summarize what Circle Nanopayments is. Reply with ONLY the summary.", category: "research" },
-];
-
-const ALL = [...CODE_BRIEFS, ...RESEARCH_BRIEFS].slice(0, FORGES);
+const ALL = BRIEFS.slice(0, FORGES);
 
 interface ForgeResult {
   id: string;
@@ -54,7 +67,8 @@ interface ForgeResult {
   submitCodexTx?: string;
   submitClaudeTx?: string;
   pickTx?: string;
-  winner?: "SMITH_1" | "SMITH_2";
+  winner?: string;
+  judgeReason?: string;
   error?: string;
 }
 
@@ -106,26 +120,45 @@ async function runForge(idx: number, brief: Brief): Promise<ForgeResult> {
   if (!claudeR.ok) console.log(`  ✖ claude failed: ${claudeR.err?.slice(0, 200)}`);
   else             console.log(`  ✓ claude submit  tx=${claudeR.txHash}`);
 
-  // pick winner: alternate; if only one submitted, pick that one
-  let winner: "SMITH_1" | "SMITH_2" = idx % 2 === 0 ? "SMITH_1" : "SMITH_2";
-  if (winner === "SMITH_1" && !codexR.ok) winner = "SMITH_2";
-  if (winner === "SMITH_2" && !claudeR.ok) winner = "SMITH_1";
+  // judge — Gemini decides if USE_JUDGE; otherwise alternate (legacy)
   if (!codexR.ok && !claudeR.ok) {
     return { id: create.id, brief, bounty: BOUNTY, createTx: create.txHash, submitCodexTx: codexR.txHash, submitClaudeTx: claudeR.txHash, error: "both smiths failed" };
   }
 
-  const pick = await api<{ txHash: string }>(`/forges/${create.id}/pick-winner`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ role: "CREATOR", winnerRole: winner, reason: `chosen by demo round-robin (${winner})` }),
-  });
-  console.log(`  ✓ pick    winner=${winner}  tx=${pick.txHash}`);
+  let winner: string;
+  let pickTx: string;
+  let verdictReason: string | undefined;
+
+  if (USE_JUDGE) {
+    const j = await api<{ winnerRole: string; verdict: { reason: string }; txHash: string }>(`/forges/${create.id}/judge`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ role: "CREATOR" }),
+    });
+    winner = j.winnerRole;
+    pickTx = j.txHash;
+    verdictReason = j.verdict.reason;
+    console.log(`  ✓ judge   winner=${winner}  tx=${pickTx}  reason="${(verdictReason ?? "").slice(0, 80)}…"`);
+  } else {
+    let pickW = idx % 2 === 0 ? "SMITH_1" : "SMITH_2";
+    if (pickW === "SMITH_1" && !codexR.ok) pickW = "SMITH_2";
+    if (pickW === "SMITH_2" && !claudeR.ok) pickW = "SMITH_1";
+    const pick = await api<{ txHash: string }>(`/forges/${create.id}/pick-winner`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ role: "CREATOR", winnerRole: pickW, reason: `round-robin (${pickW})` }),
+    });
+    winner = pickW;
+    pickTx = pick.txHash;
+    console.log(`  ✓ pick    winner=${winner}  tx=${pickTx}`);
+  }
 
   return {
     id: create.id, brief, bounty: BOUNTY,
     createTx: create.txHash,
     submitCodexTx: codexR.txHash, submitClaudeTx: claudeR.txHash,
-    pickTx: pick.txHash, winner,
+    pickTx, winner: winner as any,
+    judgeReason: verdictReason,
   };
 }
 

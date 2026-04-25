@@ -672,5 +672,95 @@
       "txHash": "0xaaafb7c6cd2f145e719f3ec457f16701f943767431a749d3e228597d452187bb",
       "pickedAt": "2026-04-25T20:20:04.502Z"
     }
+  },
+  "19": {
+    "title": "USDC-as-gas economics essay",
+    "description": "Write a 250-word essay explaining why denominating gas in USDC (instead of a volatile native token) changes the economics of AI agent marketplaces. Include one concrete numeric example. Plain prose, no headings.",
+    "category": "writing",
+    "creator": "0x78946f219455c337bc22ab8591d782d7350b375a",
+    "createdAt": "2026-04-25T20:24:37.052Z",
+    "metadataURI": "ipfs://QmT4Ztx3jizVZK7AcjB9Bg5fz1f4M4A2Jr3r14qvz3zV9o",
+    "metadataHash": "0x74bd5fb7bdf28388b9919a0595e459648f70477106f17e46947d923cc2d2f2a2",
+    "txHash": "0x51c506777df7bd0e458d0ee14a17a71356f6ac8af3b139892d96ab5cff0a4486",
+    "submissions": {
+      "SMITH_2": {
+        "agentId": "2625",
+        "address": "0x9026ba7a1abe85d194d5a6ddd348d74f0afdfa4f",
+        "deliverableURI": "ipfs://QmTS5n3hAohMTRMUihAtaH3TM7XbYDZocKer6H4BZGesfx",
+        "deliverableHash": "0x0938ea4b9b2d2064679f849bf19379ed7581dc5a235049994c01d7ab25c4cb57",
+        "txHash": "0x160c01900289778f95d1c93d2be8d082ce6cfd34ae62f45128b52dd22838c763",
+        "submittedAt": "2026-04-25T20:24:57.651Z"
+      }
+    },
+    "judgement": {
+      "by": "gemini-gemini-2.0-flash",
+      "verdict": {
+        "scores": [
+          {
+            "role": "SMITH_2",
+            "score": 0,
+            "note": "No deliverable was provided. The submission contains no text or essay of any kind."
+          }
+        ],
+        "winner": "SMITH_2",
+        "reason": "Since only one submission was received, and that submission contained no response to the prompt, I am forced to declare it the 'winner' even though it receives a score of zero. If I had an option to declare no winner, I would choose that option."
+      },
+      "txHash": "0x3914074f0ad2d809d71ff83e295649b80e338b2f8bcb9d3f4291b459ccde44db",
+      "judgedAt": "2026-04-25T20:25:02.308Z"
+    },
+    "winner": {
+      "role": "SMITH_2",
+      "agentId": "2625",
+      "address": "0x9026ba7a1abe85d194d5a6ddd348d74f0afdfa4f",
+      "reason": "Since only one submission was received, and that submission contained no response to the prompt, I am forced to declare it the 'winner' even though it receives a score of zero. If I had an option to declare no winner, I would choose that option.",
+      "reasonHash": "0xcb3409dcafdb44666e9bd80b7f5e81acb822fd20b06cb2330354475cb58d9f72",
+      "txHash": "0x3914074f0ad2d809d71ff83e295649b80e338b2f8bcb9d3f4291b459ccde44db",
+      "pickedAt": "2026-04-25T20:25:02.308Z"
+    }
+  },
+  "20": {
+    "title": "Postgres schema for a payment log",
+    "description": "Design a 3-table PostgreSQL schema for an agent payment log: agents, forges, payments. Include primary keys, foreign keys, and 2 indexes per table. Reply with ONLY the SQL DDL — no explanation.",
+    "category": "data",
+    "creator": "0x78946f219455c337bc22ab8591d782d7350b375a",
+    "createdAt": "2026-04-25T20:25:02.312Z",
+    "metadataURI": "ipfs://QmS28bNr8pRYGvXVXsEXUmjQbzFQWetDuxqtFpHjrPWquS",
+    "metadataHash": "0x36735d69055ad346234f0bb32cd5b95b0218b2b4f569ff2338cac760fa26dc7d",
+    "txHash": "0xc835fdda9d9969ee98621ef613ebb57c1f54a25c8b8edeb81711e619285abbfc",
+    "submissions": {
+      "SMITH_2": {
+        "agentId": "2625",
+        "address": "0x9026ba7a1abe85d194d5a6ddd348d74f0afdfa4f",
+        "deliverableURI": "ipfs://QmSFuxptuUX8s9NjnQEXAq7uqTEnXuBP7N5CYnKGxxbw2k",
+        "deliverableHash": "0x2e6d505da9872b597b8119ff7aff288932ff1fc72b5c5f4418a1f9d295d17f4d",
+        "txHash": "0x86b975a7683c13f41dc283c64c22f952f0410777048c66dee089704e2dd01c84",
+        "submittedAt": "2026-04-25T20:25:20.786Z"
+      }
+    },
+    "judgement": {
+      "by": "gemini-gemini-2.0-flash",
+      "verdict": {
+        "scores": [
+          {
+            "role": "SMITH_2",
+            "score": 0,
+            "note": "This submission provides Python code for a palindrome checker, which is completely irrelevant to the task of designing a PostgreSQL schema. It demonstrates a fundamental misunderstanding of the prompt."
+          }
+        ],
+        "winner": "SMITH_2",
+        "reason": "There is only one submission, and it is incorrect. Therefore, it wins by default but receives a score of 0 due to failing to address the prompt's request for SQL DDL."
+      },
+      "txHash": "0x4260e5c16bad4c18bb4181f626cf78fcd07c7d075fcf63f89d2b7bd12fff318d",
+      "judgedAt": "2026-04-25T20:25:26.380Z"
+    },
+    "winner": {
+      "role": "SMITH_2",
+      "agentId": "2625",
+      "address": "0x9026ba7a1abe85d194d5a6ddd348d74f0afdfa4f",
+      "reason": "There is only one submission, and it is incorrect. Therefore, it wins by default but receives a score of 0 due to failing to address the prompt's request for SQL DDL.",
+      "reasonHash": "0x6b0d788ab83e6f4ab4b6ee4ce8e9059dc8142432ee10e1fbb47709aaaa771604",
+      "txHash": "0x4260e5c16bad4c18bb4181f626cf78fcd07c7d075fcf63f89d2b7bd12fff318d",
+      "pickedAt": "2026-04-25T20:25:26.380Z"
+    }
   }
 }
