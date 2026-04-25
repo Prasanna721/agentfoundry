@@ -18,6 +18,8 @@ artifacts/
 broadcast/
 out/
 lib/
+!codex/src/lib/
+!codex/src/lib/**
 
 # data
 *.sqlite
