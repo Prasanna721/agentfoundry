@@ -1,0 +1,57 @@
+# Agent Foundry on Fly.io
+# After `fly auth login`:
+#   fly launch --no-deploy --copy-config --name agent-foundry --region sjc
+#   fly volumes create foundry_data --size 1 --region sjc
+#   fly secrets set CIRCLE_API_KEY=... CIRCLE_ENTITY_SECRET=... PINATA_JWT=... GEMINI_API_KEY=... CIRCLE_WALLET_SET_ID=... AGENT_FOUNDRY_CONTRACT=...
+#   fly deploy
+
+app = "agent-foundry"
+primary_region = "sjc"   # San Francisco — close to the SF demo
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  PORT                = "3000"
+  NODE_ENV            = "production"
+  ARC_RPC_URL         = "https://rpc.testnet.arc.network/"
+  ARC_CHAIN_ID        = "10974"
+  ARC_EXPLORER        = "https://testnet.arcscan.app"
+  USDC_ADDRESS        = "0x3600000000000000000000000000000000000000"
+  ERC_8004_IDENTITY   = "0x8004A818BFB912233c491871b3d84c89A494BD9e"
+  ERC_8004_REPUTATION = "0x8004B663056A597Dffe9eCcC1965A193B7388713"
+  ERC_8004_VALIDATION = "0x8004Cb1BF31DAf7788923b405b754f57acEB4272"
+  GEMINI_MODEL        = "gemini-2.0-flash"
+  X402_NETWORK        = "arc-testnet"
+  # Secrets: CIRCLE_API_KEY, CIRCLE_ENTITY_SECRET, CIRCLE_WALLET_SET_ID,
+  #          PINATA_JWT, PINATA_API_KEY, PINATA_API_SECRET,
+  #          GEMINI_API_KEY, AGENT_FOUNDRY_CONTRACT
+  # Set them via `fly secrets set KEY=VAL`.
+
+[[mounts]]
+  source = "foundry_data"
+  destination = "/app/data"
+
+[http_service]
+  internal_port = 3000
+  force_https = true
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  min_machines_running = 1
+  processes = ["app"]
+
+  [http_service.concurrency]
+    type = "requests"
+    soft_limit = 200
+    hard_limit = 250
+
+  [[http_service.checks]]
+    grace_period = "10s"
+    interval = "30s"
+    method = "get"
+    timeout = "5s"
+    path = "/healthz"
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "512mb"

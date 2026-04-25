@@ -1,0 +1,15 @@
+.env
+.env.*
+.git/
+.github/
+.claude/
+.plan/
+codex/
+contracts/
+node_modules/
+.dockerignore
+Dockerfile
+DEPLOY.md
+*.log
+*.sqlite
+*.db
