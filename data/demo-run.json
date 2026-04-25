@@ -1,0 +1,188 @@
+{
+  "startedAt": "2026-04-25T18:56:03.013Z",
+  "elapsed": "258.3",
+  "results": [
+    {
+      "id": "8",
+      "brief": {
+        "title": "reverse a string",
+        "description": "Write a one-liner TypeScript function reverse(s: string): string. Reply with ONLY the function definition.",
+        "category": "code"
+      },
+      "bounty": "0.10",
+      "createTx": "0x754dc0476fe285fbf46fc35b5a957090c2f77d544bb32c469ea0302510c91f71",
+      "submitCodexTx": "0xf296d81ae169e309777799a96f56f546aebf7959295b2ff070b80c9bfbb35b67",
+      "submitClaudeTx": "0x2b8697040a44955dd75692a57ac5dfad66eafe2da8e1576822b81e60752aa5e7",
+      "pickTx": "0x15ea2df81b91d0c970f10a50acb16ed7a19dbc452050fb5f80673c2fbcf6e35a",
+      "winner": "SMITH_1"
+    },
+    {
+      "id": "9",
+      "brief": {
+        "title": "is palindrome",
+        "description": "Write a one-liner TypeScript function isPalindrome(s: string): boolean. Reply with ONLY the function definition.",
+        "category": "code"
+      },
+      "bounty": "0.10",
+      "createTx": "0x5b56583f0900c646966f598d4b1e4df64783c6aaf8cf5f0a1df596e68bdd0964",
+      "submitCodexTx": "0x99f040ee102b9b635ed80737a8d45e48cbc0fed52edd3e0b733ae662ad5fb3fd",
+      "submitClaudeTx": "0xc18b80fbc2100a76b1bee883a4565756c6f2190cd6c23cce49cbac9f9807fd97",
+      "pickTx": "0x100533e6cde997040f72f439bf41c32f399917bdd9eff7283b12d4ee088f1c17",
+      "winner": "SMITH_2"
+    },
+    {
+      "id": "10",
+      "brief": {
+        "title": "fibonacci nth",
+        "description": "Write a TypeScript function fib(n: number): number returning the nth Fibonacci number. Use iteration, not recursion. Reply with ONLY the function definition.",
+        "category": "code"
+      },
+      "bounty": "0.10",
+      "createTx": "0x7ee7d6809ed387b3b42f5ffe48c705ead957fb79366e0705e7eca0445b309c07",
+      "submitCodexTx": "0x7b69c3ccd8e2f8ba8b1090146ecfba3aae6253631a4b7568030a7925009e97f0",
+      "submitClaudeTx": "0x4ff7ab12cc919520e7b6e90313c89a353983f4d19bb51dbc57ae49c105d57b1d",
+      "pickTx": "0x67992fd24ef129badeac852580ffe74ac63f3ee7f527dc04b05fdc9bda8e7926",
+      "winner": "SMITH_1"
+    },
+    {
+      "id": "11",
+      "brief": {
+        "title": "unique array",
+        "description": "Write a TypeScript function unique<T>(xs: T[]): T[] preserving original order. Reply with ONLY the function definition.",
+        "category": "code"
+      },
+      "bounty": "0.10",
+      "createTx": "0xef92c9c3d210bbce2b9125996aaea6de0db466cfabe22ba14ec7c998e75e4c0b",
+      "submitCodexTx": "0x11b7b16ab78fa784304273b30a32f31821e4996265a9a7bfdd11ccce74e36198",
+      "submitClaudeTx": "0x0581acfc9b86463e60e3e26799bab6a7b97b51393b2e8e4482e767469e3c8184",
+      "pickTx": "0xec9c0cb97a0ea330d74a8e6f79ae7af8421d1e5600ba97047c684ec819005383",
+      "winner": "SMITH_2"
+    },
+    {
+      "id": "12",
+      "brief": {
+        "title": "rgb to hex",
+        "description": "Write a TypeScript function rgbToHex(r: number, g: number, b: number): string returning a 7-char string starting with #. Reply with ONLY the function definition.",
+        "category": "code"
+      },
+      "bounty": "0.10",
+      "createTx": "0x448098831cc95247a6f09b936526f62f73600667de48563e5173e3ea937602e7",
+      "submitCodexTx": "0xa4c6b2794a25933352d584f1249288c6ab19612fb5f234a2f0136832a115d40b",
+      "submitClaudeTx": "0xb12a2201f7a613f568888e0a1a5f429c5bc81400e2b42ebb968339ca8897f2d7",
+      "pickTx": "0xbc49007293997b62581643db325b41f112bee840829c261fed253b53fb5a4a9e",
+      "winner": "SMITH_1"
+    },
+    {
+      "id": "13",
+      "brief": {
+        "title": "summarize Arc",
+        "description": "In 2-3 sentences, summarize what Circle's Arc L1 blockchain is. Reply with ONLY the summary.",
+        "category": "research"
+      },
+      "bounty": "0.10",
+      "createTx": "0x658ad60b2fe1196d782f3a704a61929b448ce7a278074667072c4c742ddbd72c",
+      "submitCodexTx": "0x002f880b8af8cad49c70ad2b8bd6a3079ce9775e9b06ef596b0bddbe5eae0880",
+      "submitClaudeTx": "0x3953a02676e8aee47ebc71c56b1bd7cf94948f750d901410bfabc09647551bb8",
+      "pickTx": "0xd8d8abc28cebc513e627031acde44eb6dba23ceb57903fa0b6a33e0857a77858",
+      "winner": "SMITH_2"
+    },
+    {
+      "id": "14",
+      "brief": {
+        "title": "summarize x402",
+        "description": "In 2-3 sentences, summarize what the x402 payment protocol is. Reply with ONLY the summary.",
+        "category": "research"
+      },
+      "bounty": "0.10",
+      "createTx": "0xb78ca0a13253c4a67bb022a3983a2caae564aa2b39904476827ff018722f2a8d",
+      "submitCodexTx": "0x35f39e07b1d21bd38c4a62be997f6be8d2c6737e87043405a07006343e679b10",
+      "submitClaudeTx": "0x87e32af08c5279421ab5ef846f003bd2207be4e1417e7c4a99c554e365d04b0e",
+      "pickTx": "0x50f2398308216ac4836d2f8e945c14a4c1e8751d56a34bedd7a24420101f71cf",
+      "winner": "SMITH_1"
+    },
+    {
+      "id": "15",
+      "brief": {
+        "title": "summarize ERC-8004",
+        "description": "In 2-3 sentences, summarize what ERC-8004 is. Reply with ONLY the summary.",
+        "category": "research"
+      },
+      "bounty": "0.10",
+      "createTx": "0xfdf23c22dc8f95d455f4024fb6d3046012f479275e1445560e141a77afd68fe8",
+      "submitCodexTx": "0x70b2bc36afdf625be5fd407948206dbfde5f881f7b32a5153b00f473efda7043",
+      "submitClaudeTx": "0x5fc426c7fbdb660e945c4f9b4e7546ea4bcbb3c0e901b192e7ff48c99eb3aa35",
+      "pickTx": "0xd6804b1c7aed3a0af08d942f72444f83404ad599d4ab7e62c39de208197c2052",
+      "winner": "SMITH_2"
+    },
+    {
+      "id": "16",
+      "brief": {
+        "title": "summarize ERC-8183",
+        "description": "In 2-3 sentences, summarize what ERC-8183 is. Reply with ONLY the summary.",
+        "category": "research"
+      },
+      "bounty": "0.10",
+      "createTx": "0x4536288abc42bcfcfa6b1e247223fee2912ac670276f8041fe91e4fde976250c",
+      "submitCodexTx": "0xf1038b17b8477090f8536f64b022f978b5a2782c6a2b559dee18c5c90b507a1e",
+      "submitClaudeTx": "0xedcddf0ea0bd017f963eae228104f1547edbd813e7799a18ec3976ce7d638474",
+      "pickTx": "0xf03818ce2a279c7144a51afcd2d14c4c8fe7bac8943d51d88a6599706e97707d",
+      "winner": "SMITH_1"
+    },
+    {
+      "id": "17",
+      "brief": {
+        "title": "summarize Nanopayments",
+        "description": "In 2-3 sentences, summarize what Circle Nanopayments is. Reply with ONLY the summary.",
+        "category": "research"
+      },
+      "bounty": "0.10",
+      "createTx": "0x1d94c019d9821c04dc9eda36a31aeb6f3d3fd75382af07a65e4950775041408c",
+      "submitCodexTx": "0xba5001aa85764eab4ef464e6fb401844f94bf0f0a837b6729b34f7929c706c3e",
+      "submitClaudeTx": "0x4bde6e62e364a0476d74729013dcf36eedb801df065f60b4da7e37350f6e27da",
+      "pickTx": "0xc687afd3f63ce1a22357f26e287e9c19562b472d4d0c5b2791e458cca6050843",
+      "winner": "SMITH_2"
+    }
+  ],
+  "txs": [
+    "0x754dc0476fe285fbf46fc35b5a957090c2f77d544bb32c469ea0302510c91f71",
+    "0xf296d81ae169e309777799a96f56f546aebf7959295b2ff070b80c9bfbb35b67",
+    "0x2b8697040a44955dd75692a57ac5dfad66eafe2da8e1576822b81e60752aa5e7",
+    "0x15ea2df81b91d0c970f10a50acb16ed7a19dbc452050fb5f80673c2fbcf6e35a",
+    "0x5b56583f0900c646966f598d4b1e4df64783c6aaf8cf5f0a1df596e68bdd0964",
+    "0x99f040ee102b9b635ed80737a8d45e48cbc0fed52edd3e0b733ae662ad5fb3fd",
+    "0xc18b80fbc2100a76b1bee883a4565756c6f2190cd6c23cce49cbac9f9807fd97",
+    "0x100533e6cde997040f72f439bf41c32f399917bdd9eff7283b12d4ee088f1c17",
+    "0x7ee7d6809ed387b3b42f5ffe48c705ead957fb79366e0705e7eca0445b309c07",
+    "0x7b69c3ccd8e2f8ba8b1090146ecfba3aae6253631a4b7568030a7925009e97f0",
+    "0x4ff7ab12cc919520e7b6e90313c89a353983f4d19bb51dbc57ae49c105d57b1d",
+    "0x67992fd24ef129badeac852580ffe74ac63f3ee7f527dc04b05fdc9bda8e7926",
+    "0xef92c9c3d210bbce2b9125996aaea6de0db466cfabe22ba14ec7c998e75e4c0b",
+    "0x11b7b16ab78fa784304273b30a32f31821e4996265a9a7bfdd11ccce74e36198",
+    "0x0581acfc9b86463e60e3e26799bab6a7b97b51393b2e8e4482e767469e3c8184",
+    "0xec9c0cb97a0ea330d74a8e6f79ae7af8421d1e5600ba97047c684ec819005383",
+    "0x448098831cc95247a6f09b936526f62f73600667de48563e5173e3ea937602e7",
+    "0xa4c6b2794a25933352d584f1249288c6ab19612fb5f234a2f0136832a115d40b",
+    "0xb12a2201f7a613f568888e0a1a5f429c5bc81400e2b42ebb968339ca8897f2d7",
+    "0xbc49007293997b62581643db325b41f112bee840829c261fed253b53fb5a4a9e",
+    "0x658ad60b2fe1196d782f3a704a61929b448ce7a278074667072c4c742ddbd72c",
+    "0x002f880b8af8cad49c70ad2b8bd6a3079ce9775e9b06ef596b0bddbe5eae0880",
+    "0x3953a02676e8aee47ebc71c56b1bd7cf94948f750d901410bfabc09647551bb8",
+    "0xd8d8abc28cebc513e627031acde44eb6dba23ceb57903fa0b6a33e0857a77858",
+    "0xb78ca0a13253c4a67bb022a3983a2caae564aa2b39904476827ff018722f2a8d",
+    "0x35f39e07b1d21bd38c4a62be997f6be8d2c6737e87043405a07006343e679b10",
+    "0x87e32af08c5279421ab5ef846f003bd2207be4e1417e7c4a99c554e365d04b0e",
+    "0x50f2398308216ac4836d2f8e945c14a4c1e8751d56a34bedd7a24420101f71cf",
+    "0xfdf23c22dc8f95d455f4024fb6d3046012f479275e1445560e141a77afd68fe8",
+    "0x70b2bc36afdf625be5fd407948206dbfde5f881f7b32a5153b00f473efda7043",
+    "0x5fc426c7fbdb660e945c4f9b4e7546ea4bcbb3c0e901b192e7ff48c99eb3aa35",
+    "0xd6804b1c7aed3a0af08d942f72444f83404ad599d4ab7e62c39de208197c2052",
+    "0x4536288abc42bcfcfa6b1e247223fee2912ac670276f8041fe91e4fde976250c",
+    "0xf1038b17b8477090f8536f64b022f978b5a2782c6a2b559dee18c5c90b507a1e",
+    "0xedcddf0ea0bd017f963eae228104f1547edbd813e7799a18ec3976ce7d638474",
+    "0xf03818ce2a279c7144a51afcd2d14c4c8fe7bac8943d51d88a6599706e97707d",
+    "0x1d94c019d9821c04dc9eda36a31aeb6f3d3fd75382af07a65e4950775041408c",
+    "0xba5001aa85764eab4ef464e6fb401844f94bf0f0a837b6729b34f7929c706c3e",
+    "0x4bde6e62e364a0476d74729013dcf36eedb801df065f60b4da7e37350f6e27da",
+    "0xc687afd3f63ce1a22357f26e287e9c19562b472d4d0c5b2791e458cca6050843"
+  ]
+}
