@@ -22,9 +22,17 @@ import { execAndWait } from "./lib/circle";
 import { pub, ADDR, FOUNDRY_ABI, ERC20_ABI, getForge, getSubmitters } from "./lib/onchain";
 import { byRole, byAddress, loadAgents } from "./lib/agents";
 import { pinJSON, pinText, fetchJSON } from "./lib/pinata";
+import { paywall } from "./middleware/x402";
 
 const app = new Hono();
 app.use("*", logger());
+
+// ---------- x402 paywalls ----------
+// All ≤ $0.01 — sub-cent, per-action pricing as required by the hackathon.
+const TREASURY = (process.env.X402_TREASURY || ADDR.usdc) as `0x${string}`;
+app.use("/forges", paywall({ price: "0.001", recipient: TREASURY }));
+app.use("/forges/:id",        paywall({ price: "0.001", recipient: TREASURY }));
+app.use("/forges/:id/submit", paywall({ price: "0.005", recipient: TREASURY }));
 
 // ---------- meta ----------
 app.get("/healthz", (c) => c.json({ ok: true, ts: Date.now(), yoink: ADDR.yoink, usdc: ADDR.usdc }));
