@@ -1,0 +1,30 @@
+{
+  "name": "agent-yoink",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "engines": {
+    "bun": ">=1.3"
+  },
+  "scripts": {
+    "register-entity-secret": "bun run scripts/register-entity-secret.ts",
+    "bootstrap": "bun run scripts/bootstrap.ts",
+    "register-agents": "bun run scripts/register-agents.ts",
+    "deploy:contract": "bash scripts/deploy-contract.sh",
+    "faucet": "bun run tools/faucet.ts",
+    "api": "bun run --watch apps/api/index.ts",
+    "indexer": "bun run apps/indexer/index.ts",
+    "demo": "bun run tools/demo.ts",
+    "e2e": "bash tools/e2e-happy-path.sh"
+  },
+  "dependencies": {
+    "@circle-fin/developer-controlled-wallets": "^7.0.0",
+    "hono": "^4.6.0",
+    "viem": "^2.21.0"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.1.0",
+    "@types/node": "^22.0.0",
+    "typescript": "^5.5.0"
+  }
+}
