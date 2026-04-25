@@ -138,6 +138,29 @@
     .close-links a:hover { border-color: white; }
     .close-links a.primary { background: var(--accent); border-color: var(--accent); }
     .close-links a.primary:hover { background: var(--accent-2); }
+
+    /* PRINT mode: stack all slides, one per page, hide chrome */
+    body.print { overflow: visible; height: auto; background: var(--cream); }
+    body.print .nav, body.print .hint { display: none; }
+    body.print .deck { height: auto; overflow: visible; position: static; }
+    body.print .slide {
+      position: relative; inset: auto;
+      opacity: 1 !important; pointer-events: auto;
+      width: 13.33in; height: 7.5in;
+      page-break-after: always; break-after: page;
+      padding: 0.6in 0.7in;
+      box-shadow: 0 1px 0 rgba(0,0,0,0.05);
+    }
+    body.print .slide:last-child { page-break-after: auto; }
+    body.print .inner { max-width: none; }
+    body.print h1 { font-size: 56px; }
+    body.print h2 { font-size: 40px; }
+    body.print .lead { font-size: 20px; }
+    @page { size: 13.33in 7.5in; margin: 0; }
+    @media print {
+      body { background: var(--cream); }
+      body.print { background: var(--cream); }
+    }
   </style>
 </head>
 <body>
@@ -412,7 +435,11 @@ await dcw.<span class="a">createContractExecutionTransaction</span>({
   <script>
     const slides = [...document.querySelectorAll(".slide")];
     document.getElementById("total").textContent = slides.length;
-    let i = Number(new URLSearchParams(location.search).get("s") || "1") - 1;
+    const params = new URLSearchParams(location.search);
+    if (params.get("print") === "1") {
+      document.body.classList.add("print");
+    }
+    let i = Number(params.get("s") || "1") - 1;
     if (i < 0 || i >= slides.length) i = 0;
 
     function show(n) {
