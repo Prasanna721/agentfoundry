@@ -20,6 +20,7 @@
   "dependencies": {
     "@circle-fin/developer-controlled-wallets": "^7.0.0",
     "@circle-fin/smart-contract-platform": "^10.3.0",
+    "@google/generative-ai": "^0.24.1",
     "hono": "^4.6.0",
     "viem": "^2.21.0"
   },

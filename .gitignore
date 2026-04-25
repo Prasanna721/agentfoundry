@@ -17,9 +17,7 @@ forge-cache/
 artifacts/
 broadcast/
 out/
-lib/
-!codex/src/lib/
-!codex/src/lib/**
+contracts/lib/
 
 # data
 *.sqlite

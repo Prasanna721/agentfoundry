@@ -39,6 +39,8 @@ const NETWORK       = process.env.X402_NETWORK || "arc-testnet";
 
 export function paywall(spec: PaywallSpec): MiddlewareHandler {
   return async (c: Context, next) => {
+    // Only enforce on GET — write routes already pay via on-chain bounty/gas.
+    if (c.req.method !== "GET") return next();
     const proof = c.req.header("X-PAYMENT");
     if (!proof) {
       // Issue 402.

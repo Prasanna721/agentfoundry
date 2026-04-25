@@ -23,6 +23,8 @@ import { pub, ADDR, FOUNDRY_ABI, ERC20_ABI, getForge, getSubmitters } from "./li
 import { byRole, byAddress, loadAgents } from "./lib/agents";
 import { pinJSON, pinText, fetchJSON } from "./lib/pinata";
 import { paywall } from "./middleware/x402";
+import { judge } from "./lib/judge";
+import { fetchJSON as fetchIPFS } from "./lib/pinata";
 
 const app = new Hono();
 app.use("*", logger());
@@ -97,13 +99,54 @@ app.get("/forges", async (c) => {
   const next = await pub.readContract({
     address: ADDR.yoink, abi: FOUNDRY_ABI, functionName: "nextId",
   }) as bigint;
+  const off = readForgesOff();
   const forges = [];
   for (let id = 1n; id < next; id++) {
     const f = await getForge(id);
     const submitters = await getSubmitters(id);
-    forges.push({ ...f, submitterCount: submitters.length });
+    forges.push({
+      ...f,
+      submitterCount: submitters.length,
+      offchain: off[id.toString()] ?? null,
+    });
   }
   return c.json(forges);
+});
+
+// aggregated agent stats — one shot for the dashboard, no N+1 calls
+app.get("/api/leaderboard", async (c) => {
+  const next = await pub.readContract({ address: ADDR.yoink, abi: FOUNDRY_ABI, functionName: "nextId" }) as bigint;
+  const off = readForgesOff();
+  const agents = loadAgents();
+  const stats: Record<string, { role: string; address: string; agentId: string; submissions: number; wins: number; usdcEarned: number; usdcBalance: string }> = {};
+  for (const a of agents) {
+    stats[a.role] = { role: a.role, address: a.address, agentId: a.agentId, submissions: 0, wins: 0, usdcEarned: 0, usdcBalance: "0" };
+  }
+  for (let id = 1n; id < next; id++) {
+    const meta = off[id.toString()];
+    if (!meta) continue;
+    if (meta.submissions) {
+      for (const role of Object.keys(meta.submissions)) {
+        if (stats[role]) stats[role].submissions += 1;
+      }
+    }
+    if (meta.winner) {
+      const role = meta.winner.role;
+      if (stats[role]) {
+        stats[role].wins += 1;
+        const f = await getForge(id);
+        stats[role].usdcEarned += Number(f.bounty) / 1e6;
+      }
+    }
+  }
+  // Fetch USDC balances in parallel (still N calls but parallelized)
+  await Promise.all(Object.values(stats).map(async (s) => {
+    const bal = await pub.readContract({
+      address: ADDR.usdc, abi: ERC20_ABI, functionName: "balanceOf", args: [s.address as `0x${string}`],
+    }) as bigint;
+    s.usdcBalance = formatUnits(bal, 6);
+  }));
+  return c.json(Object.values(stats));
 });
 
 app.get("/forges/:id", async (c) => {
@@ -195,6 +238,90 @@ app.post("/forges/:id/submit", async (c) => {
   writeForgesOff(off);
 
   return c.json({ forgeId: id, role: a.role, txHash: tx.txHash, deliverableURI: pin.uri, deliverableHash: pin.hash });
+});
+
+// ---------- judge (Gemini) + escrow inspector ----------
+
+app.get("/forges/:id/escrow", async (c) => {
+  const id = BigInt(c.req.param("id"));
+  const f = await getForge(id);
+  if (f.creator === "0x0000000000000000000000000000000000000000") return c.json({ error: "not found" }, 404);
+  const submitters = await getSubmitters(id);
+  const contractBal = await pub.readContract({
+    address: ADDR.usdc, abi: ERC20_ABI, functionName: "balanceOf", args: [ADDR.yoink],
+  }) as bigint;
+  const now = Math.floor(Date.now() / 1000);
+  return c.json({
+    forgeId: id.toString(),
+    bounty: f.bounty,
+    bountyUSDC: formatUnits(BigInt(f.bounty), 6),
+    status: f.status,
+    expiredAt: f.expiredAt,
+    secondsLeft: Math.max(0, f.expiredAt - now),
+    expired: now >= f.expiredAt,
+    contractBalance: contractBal.toString(),
+    contractBalanceUSDC: formatUnits(contractBal, 6),
+    submitters,
+    submitterCount: submitters.length,
+  });
+});
+
+app.post("/forges/:id/judge", async (c) => {
+  const id = c.req.param("id");
+  const body = await c.req.json().catch(() => ({})) as { role?: string };
+  const callerRole = body.role ?? "CREATOR";
+  const a = byRole(callerRole);
+  // Look up forge state, read off-chain submissions cache.
+  const offAll = readForgesOff();
+  const off = offAll[id];
+  if (!off || !off.submissions) return c.json({ error: "no submissions yet" }, 409);
+  const f = await getForge(BigInt(id));
+  if (a.address.toLowerCase() !== f.creator.toLowerCase()) return c.json({ error: "only creator may judge" }, 403);
+  if (f.status !== "Open") return c.json({ error: `forge already ${f.status}` }, 409);
+
+  // fetch each deliverable from IPFS
+  const subRoles = Object.keys(off.submissions);
+  const deliverables = await Promise.all(subRoles.map(async (role) => {
+    const sub = off.submissions[role];
+    const cid = (sub.deliverableURI as string).replace("ipfs://", "");
+    let text = "";
+    for (const gw of ["https://ipfs.io/ipfs/", "https://gateway.pinata.cloud/ipfs/"]) {
+      try {
+        const r = await fetch(`${gw}${cid}`, { signal: AbortSignal.timeout(8000) });
+        if (r.ok) { text = await r.text(); break; }
+      } catch (_) {}
+    }
+    return { role, deliverable: text };
+  }));
+
+  // Gemini evaluates
+  const verdict = await judge({
+    brief: { title: off.title ?? `Forge #${id}`, description: off.description ?? "(no description)", category: off.category },
+    submissions: deliverables,
+  });
+
+  // verdict.winner is a role; map to wallet address
+  const winnerAgent = byRole(verdict.winner);
+  const reasonHash = keccak256(stringToBytes(verdict.reason.slice(0, 200)));
+
+  const tx = await execAndWait({
+    walletId: a.walletId,
+    contractAddress: ADDR.yoink,
+    abiFunctionSignature: "pickWinner(uint256,address,bytes32)",
+    abiParameters: [id, winnerAgent.address, reasonHash],
+  });
+
+  // persist verdict
+  off.judgement = {
+    by: "gemini-" + (process.env.GEMINI_MODEL || "2.0-flash"),
+    verdict,
+    txHash: tx.txHash,
+    judgedAt: new Date().toISOString(),
+  };
+  off.winner = { role: winnerAgent.role, agentId: winnerAgent.agentId, address: winnerAgent.address, reason: verdict.reason, reasonHash, txHash: tx.txHash, pickedAt: new Date().toISOString() };
+  writeForgesOff(offAll);
+
+  return c.json({ forgeId: id, winnerRole: winnerAgent.role, verdict, txHash: tx.txHash });
 });
 
 app.post("/forges/:id/pick-winner", async (c) => {

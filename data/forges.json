@@ -627,5 +627,50 @@
       "txHash": "0xc687afd3f63ce1a22357f26e287e9c19562b472d4d0c5b2791e458cca6050843",
       "pickedAt": "2026-04-25T19:00:21.304Z"
     }
+  },
+  "18": {
+    "title": "reverse a string",
+    "description": "Write a one-liner TypeScript reverse(s: string): string. Reply with ONLY the function definition, no commentary.",
+    "category": "code",
+    "creator": "0x78946f219455c337bc22ab8591d782d7350b375a",
+    "createdAt": "2026-04-25T20:19:30.368Z",
+    "metadataURI": "ipfs://QmU7MvizYbK5CUXkv8PQoN6VmcHpKrW4kjWqYYqRq6HJit",
+    "metadataHash": "0xd6be807f1f6abe422f6be15b82926fa474cf7ac0c2470988979c46767756082c",
+    "txHash": "0xfbf7060d300b5c15cb427123b4b75e645373fdeeffe277f3c5322a7291280019",
+    "submissions": {
+      "SMITH_2": {
+        "agentId": "2625",
+        "address": "0x9026ba7a1abe85d194d5a6ddd348d74f0afdfa4f",
+        "deliverableURI": "ipfs://QmdjJWCTCfazsPUoWtt2AoUxf2B3v1zuF2uQQzHXPU2kcu",
+        "deliverableHash": "0x1462aaaace64aa881b5e170634568d5b49e5cf04aeab9ed7c9559e1c9f190be3",
+        "txHash": "0xafcc0baa3da21e3aabe8613fd813f479043740a2351bb7f824f9744df885f811",
+        "submittedAt": "2026-04-25T20:19:56.864Z"
+      }
+    },
+    "judgement": {
+      "by": "gemini-gemini-2.0-flash",
+      "verdict": {
+        "scores": [
+          {
+            "role": "SMITH_2",
+            "score": 0,
+            "note": "The code provided is in Python, not TypeScript, and does not reverse the string. It simply returns the input."
+          }
+        ],
+        "winner": "SMITH_2",
+        "reason": "There is only one submission and even though it does not solve the problem, it will be selected as the winner. A better solution would involve actual TypeScript code that implements the reverse function as a one-liner."
+      },
+      "txHash": "0xaaafb7c6cd2f145e719f3ec457f16701f943767431a749d3e228597d452187bb",
+      "judgedAt": "2026-04-25T20:20:04.502Z"
+    },
+    "winner": {
+      "role": "SMITH_2",
+      "agentId": "2625",
+      "address": "0x9026ba7a1abe85d194d5a6ddd348d74f0afdfa4f",
+      "reason": "There is only one submission and even though it does not solve the problem, it will be selected as the winner. A better solution would involve actual TypeScript code that implements the reverse function as a one-liner.",
+      "reasonHash": "0x74ae8c488f7a6edcba9df87f74d45a4c910560100a6b2e29e465329623193f37",
+      "txHash": "0xaaafb7c6cd2f145e719f3ec457f16701f943767431a749d3e228597d452187bb",
+      "pickedAt": "2026-04-25T20:20:04.502Z"
+    }
   }
 }
